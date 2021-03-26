@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import GameBoard from './components/GameBoard';
+import Constants from './utilities/Constants';
+import Utilities from './utilities/Utilities';
+import LinkedList from './utilities/LinkedList';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [board, setBoard] = useState(Utilities.createEmptyGameboard());
+  const [snakeBody, setSnakeBody] = useState(new LinkedList(Constants.SPAWN_POSITION));
+  const [snakeDirection, setSnakeDirection] = useState(Constants.DIRECTION_RIGHT);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let newSnakeBody = Utilities.moveSnake(snakeBody, snakeDirection);
+      console.log('Old head:', snakeBody.head.value);
+      console.log('New head:', newSnakeBody.head.value);
+      setSnakeBody(newSnakeBody);
+    }, Constants.REFRESH_RATE);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return <>
+    <GameBoard board={board} snake={snakeBody} />
+  </>
 }
 
 export default App;
