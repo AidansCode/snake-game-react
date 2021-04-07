@@ -2,18 +2,12 @@ import Constants from './Constants';
 import LinkedList from './LinkedList';
 
 const Utilities = {
-  createEmptyGameboard: () => {
-    const size = Constants.GAME_BOARD_SIZE;
-    let board = new Array(size).fill(0).map(row => new Array(size).fill(0));
-
-    return board;
-  },
-  doesSnakeBodyContainPosition: (snakeBody, row, col) => {
+  doesSnakeBodyContainPosition: (snakeBody, position) => {
     let curNode = snakeBody.head;
 
     while (curNode) {
       let value = curNode.value;
-      if (value[0] === row && value[1] === col) {
+      if (value[0] === position[0] && value[1] === position[1]) {
         return true;
       } else {
         curNode = curNode.next;
@@ -55,16 +49,65 @@ const Utilities = {
 
     return newSnake;
   },
-  moveSnake: (snake, direction) => {
-    let newSnake = Utilities.copySnake(snake);
+  moveSnake: (setSnake, direction, applePosition, setApplePosition) => {
+    setSnake((snake) => {
+      let newSnake = Utilities.copySnake(snake);
 
-    let newPosition = Utilities.getNextPosition(newSnake.head.value, direction);
-    if (Utilities.isValidPosition(newPosition[0], newPosition[1])) {
-      newSnake.addToFront(newPosition);
-      snake.dropFromBack();
+      let newPosition = Utilities.getNextPosition(newSnake.head.value, direction);
+      if (Utilities.isValidPosition(newPosition[0], newPosition[1])) {
+        newSnake.addToFront(newPosition);
+
+        if (Utilities.isAppleAtPosition(newPosition, applePosition)) {
+          setApplePosition(null);
+        } else {
+          newSnake.dropFromBack();
+        }
+      }
+
+      return newSnake;
+    });
+  },
+  getDirectionFromKey: (key) => {
+    const map = {
+      'ArrowLeft': Constants.DIRECTION_LEFT,
+      'ArrowUp': Constants.DIRECTION_UP,
+      'ArrowRight': Constants.DIRECTION_RIGHT,
+      'ArrowDown': Constants.DIRECTION_DOWN
+    };
+
+    return map[key] || null;
+  },
+  areDirectionsOppositeFromEachOther: (dir1, dir2) => {
+    const map = {
+      [Constants.DIRECTION_LEFT]: Constants.DIRECTION_RIGHT,
+      [Constants.DIRECTION_UP]: Constants.DIRECTION_DOWN,
+      [Constants.DIRECTION_RIGHT]: Constants.DIRECTION_LEFT,
+      [Constants.DIRECTION_DOWN]: Constants.DIRECTION_UP
+    };
+
+    return map[dir1] === dir2;
+  },
+  getRandomIntInRange: (min, max) => {
+    return Math.floor(Math.random() * (max - min) + min);
+  },
+  getRandomBoardPosition: () => {
+    let boardSize = Constants.GAME_BOARD_SIZE;
+
+    return [
+      Utilities.getRandomIntInRange(0, boardSize),
+      Utilities.getRandomIntInRange(0, boardSize),
+    ];
+  },
+  getRandomApplePosition: (snakeBody) => {
+    while (true) {
+      let position = Utilities.getRandomBoardPosition();
+      if (!Utilities.doesSnakeBodyContainPosition(snakeBody, position[0], position[1])) {
+        return position;
+      }
     }
-
-    return newSnake;
+  },
+  isAppleAtPosition: (position, applePosition) => {
+    return applePosition && applePosition[0] === position[0] && applePosition[1] === position[1];
   }
 };
 

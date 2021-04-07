@@ -1,13 +1,16 @@
 import React from 'react';
 import Utilities from '../utilities/Utilities';
 
-function GameBoard({ board, snake }) {
+function GameBoard({ boardSize, snake, applePosition }) {
 
   function getCellClass(row, col) {
+    let position = [row, col];
     let classes = 'cell';
 
-    if (Utilities.doesSnakeBodyContainPosition(snake, row, col)) {
+    if (Utilities.doesSnakeBodyContainPosition(snake, position)) {
       classes += ' cell-snake';
+    } else if (Utilities.isAppleAtPosition(position, applePosition)) {
+      classes += ' cell-apple';
     }
 
     return classes;
@@ -15,9 +18,9 @@ function GameBoard({ board, snake }) {
 
   return <table className="game-board">
     <tbody>
-      {board.map((row, rowId) => {
+      {[...Array(boardSize)].map((e, rowId) => {
         return <tr className="row" key={rowId}>
-          {row.map((cell, colId) => {
+          {[...Array(boardSize)].map((e, colId) => {
             return <td className={getCellClass(rowId, colId)} key={rowId + '-' + colId}></td>
           })}
         </tr>

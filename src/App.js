@@ -3,25 +3,42 @@ import GameBoard from './components/GameBoard';
 import Constants from './utilities/Constants';
 import Utilities from './utilities/Utilities';
 import LinkedList from './utilities/LinkedList';
+import useInterval from './utilities/UseInterval';
 
 function App() {
-  const [board, setBoard] = useState(Utilities.createEmptyGameboard());
+  const [applePosition, setApplePosition] = useState(null);
   const [snakeBody, setSnakeBody] = useState(new LinkedList(Constants.SPAWN_POSITION));
   const [snakeDirection, setSnakeDirection] = useState(Constants.DIRECTION_RIGHT);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      let newSnakeBody = Utilities.moveSnake(snakeBody, snakeDirection);
-      console.log('Old head:', snakeBody.head.value);
-      console.log('New head:', newSnakeBody.head.value);
-      setSnakeBody(newSnakeBody);
-    }, Constants.REFRESH_RATE);
-
-    return () => clearInterval(interval);
+    window.addEventListener('keydown', e => {
+      const newDirection = Utilities.getDirectionFromKey(e.key);
+      if (newDirection) {
+        setSnakeDirection((oldDirection) => {
+          if (!Utilities.areDirectionsOppositeFromEachOther(oldDirection, newDirection)) {
+            return newDirection;
+          } else {
+            return oldDirection;
+          }
+        });
+      }
+    });
   }, []);
 
+  useInterval(() => {
+    Utilities.moveSnake(setSnakeBody, snakeDirection, applePosition, setApplePosition);
+  }, Constants.REFRESH_RATE);
+
+  useEffect(() => {
+    if (!applePosition) {
+      setApplePosition(() => {
+        return Utilities.getRandomApplePosition(snakeBody);
+      });
+    }
+  }, [applePosition]);
+
   return <>
-    <GameBoard board={board} snake={snakeBody} />
+    <GameBoard boardSize={Constants.GAME_BOARD_SIZE} snake={snakeBody} applePosition={applePosition} />
   </>
 }
 
