@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GameBoard from './components/GameBoard';
 import PlayGameButton from './components/PlayGameButton';
+import DisplayMessage from './components/DisplayMessage';
 import Constants from './utilities/Constants';
 import Utilities from './utilities/Utilities';
 import LinkedList from './utilities/LinkedList';
@@ -11,12 +12,13 @@ function App() {
   const [score, setScore] = useState(-1);
   const [snakeBody, setSnakeBody] = useState(new LinkedList(Constants.SPAWN_POSITION));
   const [snakeDirection, setSnakeDirection] = useState(Constants.DIRECTION_RIGHT);
-  const [applePosition, setApplePosition] = useState(Utilities.getNewApplePosition(snakeBody));
+  const [applePosition, setApplePosition] = useState(null);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     window.addEventListener('keydown', e => {
-      if (e.key === ' ' && !isGameActive) {
-        setIsGameActive(true);
+      if (e.key === ' ' && !isGameActive) { //if pressed spacebar and game isn't active
+        restartGame();
       } else {
         const newDirection = Utilities.getDirectionFromKey(e.key);
         if (newDirection) {
@@ -34,7 +36,7 @@ function App() {
 
   useInterval(() => {
     if (isGameActive) {
-      Utilities.moveSnake(setSnakeBody, snakeDirection, applePosition, setApplePosition);
+      Utilities.moveSnake(setSnakeBody, snakeDirection, applePosition, setApplePosition, endGame);
     }
   }, Constants.REFRESH_RATE);
 
@@ -42,14 +44,25 @@ function App() {
     setScore(oldScore => oldScore + 1);
   }, [applePosition]);
 
-  const startGame = () => {
+  const restartGame = () => {
+    setMessage(null);
+    setScore(0);
+    setSnakeBody(new LinkedList(Constants.SPAWN_POSITION));
+    setSnakeDirection(Constants.DIRECTION_RIGHT);
+    setApplePosition(Utilities.getNewApplePosition(snakeBody));
     setIsGameActive(true);
+  };
+
+  const endGame = () => {
+    setIsGameActive(false);
+    setMessage('You lost! Final score: ' + score);
   };
 
   return <div style={{textAlign: 'center', color: 'white'}}>
     {score >= 0 ? (<h1>Score: {score}</h1>) : null}
 
-    {isGameActive ? null : <PlayGameButton isGameActive={isGameActive} startGame={startGame} />}
+    <DisplayMessage text={message} color='red' />
+    {isGameActive ? null : <PlayGameButton isGameActive={isGameActive} startGame={restartGame} />}
     <GameBoard boardSize={Constants.GAME_BOARD_SIZE} snake={snakeBody} applePosition={applePosition} />
   </div>
 }

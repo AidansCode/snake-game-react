@@ -49,19 +49,23 @@ const Utilities = {
 
     return newSnake;
   },
-  moveSnake: (setSnake, direction, applePosition, setApplePosition) => {
+  moveSnake: (setSnake, direction, applePosition, setApplePosition, endGame) => {
     setSnake((snake) => {
       let newSnake = Utilities.copySnake(snake);
 
       let newPosition = Utilities.getNextPosition(newSnake.head.value, direction);
-      if (Utilities.isValidPosition(newPosition[0], newPosition[1])) {
-        newSnake.addToFront(newPosition);
+      const isValidPosition = Utilities.isValidPosition(newPosition[0], newPosition[1]);
+      const didSnakeRunIntoSelf = Utilities.doesSnakeBodyContainPosition(newSnake, newPosition);
+      if (!isValidPosition || didSnakeRunIntoSelf) {
+        endGame();
+        return newSnake;
+      }
 
-        if (Utilities.isAppleAtPosition(newPosition, applePosition)) {
-          Utilities.generateNewApple(newSnake, setApplePosition);
-        } else {
-          newSnake.dropFromBack();
-        }
+      newSnake.addToFront(newPosition);
+      if (Utilities.isAppleAtPosition(newPosition, applePosition)) {
+        Utilities.generateNewApple(newSnake, setApplePosition);
+      } else {
+        newSnake.dropFromBack();
       }
 
       return newSnake;
