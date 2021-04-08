@@ -7,9 +7,9 @@ import useInterval from './utilities/UseInterval';
 
 function App() {
   const [score, setScore] = useState(0);
-  const [applePosition, setApplePosition] = useState(null);
   const [snakeBody, setSnakeBody] = useState(new LinkedList(Constants.SPAWN_POSITION));
   const [snakeDirection, setSnakeDirection] = useState(Constants.DIRECTION_RIGHT);
+  const [applePosition, setApplePosition] = useState(Utilities.getNewApplePosition(snakeBody));
 
   useEffect(() => {
     window.addEventListener('keydown', e => {
@@ -31,12 +31,7 @@ function App() {
   }, Constants.REFRESH_RATE);
 
   useEffect(() => {
-    if (!applePosition) {
-      setApplePosition(() => {
-        return Utilities.getRandomApplePosition(snakeBody);
-      });
-      setScore(oldScore => oldScore + 1);
-    }
+    setScore(oldScore => oldScore + 1);
   }, [applePosition]);
 
   return <div style={{textAlign: 'center', color: 'white'}}>

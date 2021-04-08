@@ -58,7 +58,7 @@ const Utilities = {
         newSnake.addToFront(newPosition);
 
         if (Utilities.isAppleAtPosition(newPosition, applePosition)) {
-          setApplePosition(null);
+          Utilities.generateNewApple(newSnake, setApplePosition);
         } else {
           newSnake.dropFromBack();
         }
@@ -98,16 +98,19 @@ const Utilities = {
       Utilities.getRandomIntInRange(0, boardSize),
     ];
   },
-  getRandomApplePosition: (snakeBody) => {
+  getNewApplePosition: (snakeBody) => {
     while (true) {
       let position = Utilities.getRandomBoardPosition();
-      if (!Utilities.doesSnakeBodyContainPosition(snakeBody, position[0], position[1])) {
+      if (!Utilities.doesSnakeBodyContainPosition(snakeBody, position)) {
         return position;
       }
     }
   },
   isAppleAtPosition: (position, applePosition) => {
     return applePosition && applePosition[0] === position[0] && applePosition[1] === position[1];
+  },
+  generateNewApple: (snakeBody, setApplePosition) => {
+    setApplePosition(Utilities.getNewApplePosition(snakeBody));
   }
 };
 
