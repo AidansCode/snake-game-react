@@ -1,7 +1,5 @@
 # Snake-Game-React
 
-Simple Snake game made using create-react-app. In progress
+Simple Snake game made using create-react-app.
 
-## To Do:
-
-* Host on my website
+[Hosted at snake.aidanmurphey.com](https://snake.aidanmurphey.com)

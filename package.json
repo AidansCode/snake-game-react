@@ -2,7 +2,7 @@
   "name": "snake",
   "version": "1.0.0",
   "private": true,
-  "homepage": "http://aidanscode.github.io/snake-game-react",
+  "homepage": "http://snake.aidanmurphey.com",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.5",
