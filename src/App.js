@@ -17,7 +17,7 @@ function App() {
 
   useEffect(() => {
     window.addEventListener('keydown', e => {
-      if (e.key === ' ' && !isGameActive) { //if pressed spacebar and game isn't active
+      if (e.key === ' ') { //if pressed spacebar
         restartGame();
       } else {
         const newDirection = Utilities.getDirectionFromKey(e.key);
